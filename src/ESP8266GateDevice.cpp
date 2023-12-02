@@ -58,23 +58,20 @@ void ESP8266GateDevice::handle() {
 
 void ESP8266GateDevice::connectServer() {
     if (connectionState == 0) {
-        delete UDP;
-        UDP = new WiFiUDP();
-        int result = UDP->begin(10001);
+        int result = UDP.begin(10001);
         if (result == 1) {
             connectionState = 1;
         } else {
             return;
         }
     } else {
-        int packetSize = UDP->parsePacket();
+        int packetSize = UDP.parsePacket();
         if (packetSize > 0) {
             char data[packetSize];
-            UDP->read(data, packetSize);
+            UDP.read(data, packetSize);
             if (strcmp(data, "GateServer")) {
-                IPAddress serverIp = UDP->remoteIP();
-                UDP->stop();
-                delete UDP;
+                IPAddress serverIp = UDP.remoteIP();
+                UDP.stop();
                 connectionState = 2;
             }
         }

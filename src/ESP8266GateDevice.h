@@ -36,7 +36,7 @@ class ESP8266GateDevice
     private:
         String WIFI_SSID;
         String WIFI_PASS;
-        WiFiUDP *UDP;
+        WiFiUDP UDP;
         bool deviceStarted;
         String deviceName;
         void connectServer();
