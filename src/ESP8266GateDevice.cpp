@@ -19,7 +19,7 @@
 
 #include "ESP8266GateDevice.h"
 
-ArduinoGateDevice::ArduinoGateDevice(String ssid, String password) {
+ESP8266GateDevice::ESP8266GateDevice(String ssid, String password) {
     WIFI_SSID = ssid;
     WIFI_PASS = password;
     deviceStarted = false;
@@ -27,42 +27,56 @@ ArduinoGateDevice::ArduinoGateDevice(String ssid, String password) {
     connectionState = 0;
 };
 
-void ArduinoGateDevice::setDeviceName(String name) {
+void ESP8266GateDevice::setDeviceName(String name) {
     if (!deviceStarted) {
         deviceName = name;
     }
 };
 
-void ArduinoGateDevice::startDevice() {
+void ESP8266GateDevice::startDevice() {
     if (!deviceStarted) {
         deviceStarted = true;
         WiFi.begin(WIFI_SSID, WIFI_PASS);
         while (WiFi.status() != WL_CONNECTED) {
             delay(100);
         }
-        connectionState = 1;
-        UDP.begin(10001);
+        connectServer();
     }
 };
 
-String ArduinoGateDevice::getDeviceName() {
-    return deviceName;
+void ESP8266GateDevice::handle() {
+    if (WiFi.status() == WL_CONNECTED) {
+        if (connectionState == 2) {
+            // TODO
+        } else {
+            connectServer();
+        }
+    } else {
+        connectionState = 0;
+    }
 }
 
-void ArduinoGateDevice::handle() {
-    if (WiFi.status() != WL_CONNECTED) {
-        connectionState = 0;
+void ESP8266GateDevice::connectServer() {
+    if (connectionState == 0) {
+        delete UDP;
+        UDP = new WiFiUDP();
+        int result = UDP->begin(10001);
+        if (result == 1) {
+            connectionState = 1;
+        } else {
+            return;
+        }
     } else {
-        int packetSize = UDP.parsePacket();
+        int packetSize = UDP->parsePacket();
         if (packetSize > 0) {
             char data[packetSize];
-            UDP.read(data, packetSize);
+            UDP->read(data, packetSize);
             if (strcmp(data, "GateServer")) {
-                serverIp = UDP.remoteIP();
+                IPAddress serverIp = UDP->remoteIP();
+                UDP->stop();
+                delete UDP;
                 connectionState = 2;
             }
-        } else {
-            delay(1000);
         }
     }
 }

@@ -24,23 +24,22 @@
 #include <ESP8266WiFi.h>
 #include <WiFiUdp.h>
 
-class ArduinoGateDevice
+class ESP8266GateDevice
 {
     public:
-        ArduinoGateDevice(String ssid, String password);
+        ESP8266GateDevice(String ssid, String password);
         void setDeviceName(String name);
-        String getDeviceName();
         void startDevice();
         void handle();
         int connectionState;
-        IPAddress serverIp;
 
     private:
         String WIFI_SSID;
         String WIFI_PASS;
-        WiFiUDP UDP;
+        WiFiUDP *UDP;
         bool deviceStarted;
         String deviceName;
+        void connectServer();
 };
 
 #endif
