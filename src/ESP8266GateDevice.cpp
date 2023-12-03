@@ -47,6 +47,7 @@ void ESP8266GateDevice::startDevice() {
 void ESP8266GateDevice::loop() {
     if (WiFi.status() == WL_CONNECTED) {
         if (this->connectionState == 4) {
+            this->webSocket.loop();
             // TODO
         } else {
             this->connectServer();
@@ -59,7 +60,6 @@ void ESP8266GateDevice::loop() {
 void ESP8266GateDevice::connectServer() {
     switch (this->connectionState) {
         case 0:
-        Serial.println("Discovery...");
         {
             this->webSocket.disconnect();
             int result = this->UDP.begin(10001);
@@ -72,7 +72,6 @@ void ESP8266GateDevice::connectServer() {
         {
             int packetSize = this->UDP.parsePacket();
             if (packetSize > 0) {
-                Serial.println("Connecting...");
                 char data[packetSize];
                 this->UDP.read(data, packetSize);
                 if (strcmp(data, "GateServer")) {
@@ -97,19 +96,29 @@ void ESP8266GateDevice::connectServer() {
 void ESP8266GateDevice::webSocketEvent(WStype_t type, uint8_t * payload, size_t length) {
     switch(type) {
         case WStype_DISCONNECTED:
-            Serial.println("Socket closed");
             this->connectionState = 0;
             break;
         case WStype_CONNECTED:
-            Serial.println("Socket ready");
             this->connectionState = 3;
             break;
         case WStype_TEXT:
-//            Serial.println(payload);
-//            USE_SERIAL.printf("[WSc] get text: %s\n", payload);
-
-            // send message to server
-            // webSocket.sendTXT("message here");
+            char * message = (char *) payload;
+            if (this->connectionState == 3) {
+                if (message[0] == '*') {
+                    if (message[1] == '?') {
+                        message[1] = '>';
+                        String response = strcat(message, "|{");
+                        response += "\"deviceName\":\"" + this->deviceName + "\", \"values\":[]}";
+                        this->webSocket.sendTXT(response);
+                        Serial.println("Responding: " + response);
+                    } else if (message[1] == '!') {
+                        if (strcmp(message, "*!ready")) {
+                            Serial.println("Received ready");
+                            this->connectionState = 4;
+                        }
+                    }
+                }
+            }
             break;
     }
 }
