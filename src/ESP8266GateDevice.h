@@ -23,6 +23,7 @@
 #include <Arduino.h>
 #include <ESP8266WiFi.h>
 #include <WiFiUdp.h>
+#include <WebSocketsClient.h>
 
 class ESP8266GateDevice
 {
@@ -30,16 +31,18 @@ class ESP8266GateDevice
         ESP8266GateDevice(String ssid, String password);
         void setDeviceName(String name);
         void startDevice();
-        void handle();
+        void loop();
         int connectionState;
 
     private:
         String WIFI_SSID;
         String WIFI_PASS;
         WiFiUDP UDP;
+        WebSocketsClient webSocket;
         bool deviceStarted;
         String deviceName;
         void connectServer();
+        void webSocketEvent(WStype_t type, uint8_t * payload, size_t length);
 };
 
 #endif
