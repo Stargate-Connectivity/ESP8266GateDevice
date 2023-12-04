@@ -44,6 +44,10 @@ class ESP8266GateDevice
         String deviceName;
         void connectServer();
         void webSocketEvent(WStype_t type, uint8_t * payload, size_t length);
+        void handlePing();
+        unsigned long pingTimer;
+        bool pingInProgress;
+        int failedPings;
 };
 
 #endif

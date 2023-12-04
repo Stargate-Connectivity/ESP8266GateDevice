@@ -25,6 +25,9 @@ ESP8266GateDevice::ESP8266GateDevice(String ssid, String password) {
     this->deviceStarted = false;
     this->deviceName = "";
     this->connectionState = 0;
+    this->pingTimer = 0;
+    this->pingInProgress = false;
+    this->failedPings = 0;
 };
 
 void ESP8266GateDevice::setDeviceName(String name) {
@@ -48,6 +51,7 @@ void ESP8266GateDevice::loop() {
     if (WiFi.status() == WL_CONNECTED) {
         if (this->connectionState == 4) {
             this->webSocket.loop();
+            this->handlePing();
             // TODO
         } else {
             this->connectServer();
@@ -110,18 +114,44 @@ void ESP8266GateDevice::webSocketEvent(WStype_t type, uint8_t * payload, size_t 
                         String response = strcat(message, "|");
                         response += createManifest(this->deviceName);
                         this->webSocket.sendTXT(response);
-                        Serial.println("Responding: " + response);
                     } else if (message[1] == '!') {
                         if (message[2] == 'a') {
                             String msg(message);
                             handleIdAssigned(msg);
                         } else if (message[2] == 'r') {
-                            Serial.println("Received ready");
+                            this->pingInProgress = false;
+                            this->failedPings = 0;
                             this->connectionState = 4;
                         }
                     }
                 }
+            } else {
+                if (message[0] == '*') {
+                    if (message[1] == '>' && this->pingInProgress) {
+                        this->pingInProgress = false;
+                        this->pingTimer = millis() + 3000;
+                        this->failedPings = 0;
+                    }
+                }
             }
             break;
+    }
+}
+
+void ESP8266GateDevice::handlePing() {
+    unsigned long now = millis();
+    if (this->pingTimer < now) {
+        if (this->pingInProgress) {
+            this->failedPings++;
+            if (this->failedPings > 3) {
+                this->webSocket.disconnect();
+                this->connectionState = 0;
+            }
+        }
+        if (this->connectionState == 4) {
+            this->pingInProgress = true;
+            this->pingTimer = now + 1000;
+            this->webSocket.sendTXT("*?ping");
+        }
     }
 }

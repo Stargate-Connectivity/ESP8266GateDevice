@@ -60,5 +60,4 @@ void handleIdAssigned(String idAssignedMessage) {
         EEPROM.write(i + 1, buffer[i]);
     }
     EEPROM.end();
-    Serial.println("Assigned id: " + id);
 }
