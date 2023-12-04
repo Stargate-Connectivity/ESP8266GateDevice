@@ -107,12 +107,15 @@ void ESP8266GateDevice::webSocketEvent(WStype_t type, uint8_t * payload, size_t 
                 if (message[0] == '*') {
                     if (message[1] == '?') {
                         message[1] = '>';
-                        String response = strcat(message, "|{");
-                        response += "\"deviceName\":\"" + this->deviceName + "\", \"values\":[]}";
+                        String response = strcat(message, "|");
+                        response += createManifest(this->deviceName);
                         this->webSocket.sendTXT(response);
                         Serial.println("Responding: " + response);
                     } else if (message[1] == '!') {
-                        if (strcmp(message, "*!ready")) {
+                        if (message[2] == 'a') {
+                            String msg(message);
+                            handleIdAssigned(msg);
+                        } else if (message[2] == 'r') {
                             Serial.println("Received ready");
                             this->connectionState = 4;
                         }

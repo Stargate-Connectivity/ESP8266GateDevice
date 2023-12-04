@@ -24,6 +24,7 @@
 #include <ESP8266WiFi.h>
 #include <WiFiUdp.h>
 #include <WebSocketsClient.h>
+#include <MessageHandler.h>
 
 class ESP8266GateDevice
 {
