@@ -17,24 +17,41 @@
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-#ifndef ESP8266GateDevice_h
-#define ESP8266GateDevice_h
+#ifndef GateDevice_h
+#define GateDevice_h
 
 #include <Arduino.h>
-#include <WiFiUdp.h>
-#include "lib/GateDevice.h"
+#include <ESP8266WiFi.h>
+#include <WebSocketsClient.h>
+#include "MessageHandler.h"
 
-class ESP8266GateDevice : public GateDevice
+class GateDevice
 {
     public:
-        ESP8266GateDevice(String ssid, String password);
+        GateDevice();
+        void setDeviceName(String name);
+        void startDevice();
+        void loop();
+        int connectionState;
+        String WIFI_SSID;
+        String WIFI_PASS;
+
+    protected:
+        virtual bool startUdp(int port) = 0;
+        virtual void stopUdp() = 0;
+        virtual bool wasKeywordReceived(char* keyword) = 0;
+        virtual IPAddress getServerIp() = 0;
 
     private:
-        bool startUdp(int port) override;
-        void stopUdp() override;
-        bool wasKeywordReceived(char* keyword) override;
-        IPAddress getServerIp() override;
-        WiFiUDP UDP;
+        WebSocketsClient webSocket;
+        bool deviceStarted;
+        String deviceName;
+        void connectServer();
+        void webSocketEvent(WStype_t type, uint8_t * payload, size_t length);
+        void handlePing();
+        unsigned long pingTimer;
+        bool pingInProgress;
+        int failedPings;
 };
 
 #endif
