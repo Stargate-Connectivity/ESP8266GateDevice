@@ -37,18 +37,15 @@ void GateDevice::setDeviceName(String name) {
 void GateDevice::startDevice() {
     if (!this->deviceStarted) {
         this->deviceStarted = true;
-        WiFi.begin(this->WIFI_SSID, this->WIFI_PASS);
-        while (WiFi.status() != WL_CONNECTED) {
-            delay(100);
-        }
+        this->onDeviceStart();
         this->connectServer();
     }
 };
 
 void GateDevice::loop() {
-    if (WiFi.status() == WL_CONNECTED) {
+    if (this->networkAvailable()) {
         if (this->connectionState == 4) {
-            this->webSocket.loop();
+            this->loopSocket();
             this->handlePing();
             // TODO
         } else {
@@ -63,10 +60,9 @@ void GateDevice::connectServer() {
     switch (this->connectionState) {
         case 0:
         {
-            this->webSocket.disconnect();
+            this->stopSocket();
             bool success = this->startUdp(10001);
             if (success) {
-                Serial.println("UDP started");
                 this->connectionState = 1;
             }
             break;
@@ -74,64 +70,19 @@ void GateDevice::connectServer() {
         case 1:
         {
             if (this->wasKeywordReceived((char*) "GateServer")) {
-                IPAddress serverIp = this->getServerIp();
+                String serverIp = this->getServerIp();
                 this->stopUdp();
-                this->webSocket.begin(serverIp, 10003, "/");
-                this->webSocket.onEvent(std::bind(&GateDevice::webSocketEvent, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3));
+                this->startSocket(serverIp, 10003);
                 this->connectionState = 2;
-                Serial.println("Socket started");
             }
             break;
         }
         case 2:
         case 3:
         {
-            this->webSocket.loop();
+            this->loopSocket();
             break;
         }
-    }
-}
-
-void GateDevice::webSocketEvent(WStype_t type, uint8_t * payload, size_t length) {
-    switch(type) {
-        case WStype_DISCONNECTED:
-            Serial.println("Socket closed");
-            this->connectionState = 0;
-            break;
-        case WStype_CONNECTED:
-            Serial.println("Socket opened");
-            this->connectionState = 3;
-            break;
-        case WStype_TEXT:
-            char * message = (char *) payload;
-            if (this->connectionState == 3) {
-                if (message[0] == '*') {
-                    if (message[1] == '?') {
-                        message[1] = '>';
-                        String response = strcat(message, "|");
-                        response += createManifest(this->deviceName);
-                        this->webSocket.sendTXT(response);
-                    } else if (message[1] == '!') {
-                        if (message[2] == 'a') {
-                            String msg(message);
-                            handleIdAssigned(msg);
-                        } else if (message[2] == 'r') {
-                            this->pingInProgress = false;
-                            this->failedPings = 0;
-                            this->connectionState = 4;
-                        }
-                    }
-                }
-            } else {
-                if (message[0] == '*') {
-                    if (message[1] == '>' && this->pingInProgress) {
-                        this->pingInProgress = false;
-                        this->pingTimer = millis() + 3000;
-                        this->failedPings = 0;
-                    }
-                }
-            }
-            break;
     }
 }
 
@@ -141,14 +92,52 @@ void GateDevice::handlePing() {
         if (this->pingInProgress) {
             this->failedPings++;
             if (this->failedPings > 3) {
-                this->webSocket.disconnect();
+                this->stopSocket();
                 this->connectionState = 0;
             }
         }
         if (this->connectionState == 4) {
             this->pingInProgress = true;
             this->pingTimer = now + 1000;
-            this->webSocket.sendTXT("*?ping");
+            this->send("*?ping");
+        }
+    }
+}
+
+void GateDevice::socketOpened() {
+    this->connectionState = 3;
+}
+
+void GateDevice::socketClosed() {
+    this->connectionState = 0;
+}
+
+void GateDevice::onMessage(char* message) {
+    if (this->connectionState == 3) {
+        if (message[0] == '*') {
+            if (message[1] == '?') {
+                message[1] = '>';
+                String response = strcat(message, "|");
+                response += createManifest(this->deviceName);
+                this->send(response);
+            } else if (message[1] == '!') {
+                if (message[2] == 'a') {
+                    String msg(message);
+                    handleIdAssigned(msg);
+                } else if (message[2] == 'r') {
+                    this->pingInProgress = false;
+                    this->failedPings = 0;
+                    this->connectionState = 4;
+                }
+            }
+        }
+    } else {
+        if (message[0] == '*') {
+            if (message[1] == '>' && this->pingInProgress) {
+                this->pingInProgress = false;
+                this->pingTimer = millis() + 3000;
+                this->failedPings = 0;
+            }
         }
     }
 }

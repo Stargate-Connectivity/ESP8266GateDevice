@@ -21,8 +21,6 @@
 #define GateDevice_h
 
 #include <Arduino.h>
-#include <ESP8266WiFi.h>
-#include <WebSocketsClient.h>
 #include "MessageHandler.h"
 
 class GateDevice
@@ -33,21 +31,27 @@ class GateDevice
         void startDevice();
         void loop();
         int connectionState;
-        String WIFI_SSID;
-        String WIFI_PASS;
 
     protected:
         virtual bool startUdp(int port) = 0;
         virtual void stopUdp() = 0;
         virtual bool wasKeywordReceived(char* keyword) = 0;
-        virtual IPAddress getServerIp() = 0;
+        virtual String getServerIp() = 0;
+        virtual void onDeviceStart() = 0;
+        virtual bool networkAvailable() = 0;
+        virtual void startSocket(String serverIp, int port) = 0;
+        virtual void stopSocket() = 0;
+        virtual void send(String message) = 0;
+        virtual void loopSocket() = 0;
+
+        void socketOpened();
+        void socketClosed();
+        void onMessage(char* message);
 
     private:
-        WebSocketsClient webSocket;
         bool deviceStarted;
         String deviceName;
         void connectServer();
-        void webSocketEvent(WStype_t type, uint8_t * payload, size_t length);
         void handlePing();
         unsigned long pingTimer;
         bool pingInProgress;

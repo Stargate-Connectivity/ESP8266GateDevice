@@ -21,7 +21,9 @@
 #define ESP8266GateDevice_h
 
 #include <Arduino.h>
+#include <ESP8266WiFi.h>
 #include <WiFiUdp.h>
+#include <WebSocketsClient.h>
 #include "lib/GateDevice.h"
 
 class ESP8266GateDevice : public GateDevice
@@ -33,8 +35,19 @@ class ESP8266GateDevice : public GateDevice
         bool startUdp(int port) override;
         void stopUdp() override;
         bool wasKeywordReceived(char* keyword) override;
-        IPAddress getServerIp() override;
+        String getServerIp() override;
+        void onDeviceStart() override;
+        bool networkAvailable() override;
+        void startSocket(String serverIp, int port) override;
+        void stopSocket() override;
+        void send(String message) override;
+        void loopSocket() override;
+
+        String WIFI_SSID;
+        String WIFI_PASS;
         WiFiUDP UDP;
+        WebSocketsClient webSocket;
+        void webSocketEvent(WStype_t type, uint8_t * payload, size_t length);
 };
 
 #endif
