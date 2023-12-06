@@ -40,8 +40,8 @@ class ESP8266GateDevice : public GateDevice
         bool networkAvailable() override;
         void startSocket(String serverIp, int port) override;
         void stopSocket() override;
-        void send(String message) override;
         void loopSocket() override;
+        void send(String message) override;
 
         String WIFI_SSID;
         String WIFI_PASS;

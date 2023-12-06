@@ -6,8 +6,8 @@
 class GateValue
 {
     public:
-        int id;
         GateValue();
+        int id;
         String valueName;
         String direction;
         virtual String toString() = 0;
@@ -17,6 +17,7 @@ class GateValue
     protected:
         String type;
         String toPartialManifest();
+        void send();
 
     private:
         static int nextId;

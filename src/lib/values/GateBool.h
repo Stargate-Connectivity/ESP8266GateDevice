@@ -3,11 +3,12 @@
 
 #include <Arduino.h>
 #include "GateValue.h"
+#include "../OutputBuffer.h"
 
 class GateBool : public GateValue
 {
     public:
-        GateBool();
+        GateBool(OutputBuffer* outputBuffer);
         String toString() override;
         void fromRemote(String textValue) override;
         String toManifest() override;
@@ -17,6 +18,7 @@ class GateBool : public GateValue
         String labelFalse;
 
     private:
+        OutputBuffer* outputBuffer;
         bool value;
         void setRemoteValue(bool value);
 };

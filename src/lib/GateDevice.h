@@ -21,6 +21,7 @@
 #define GateDevice_h
 
 #include <Arduino.h>
+#include "OutputBuffer.h"
 #include "MessageHandler.h"
 #include "lib/values/ValueFactory.h"
 
@@ -43,14 +44,15 @@ class GateDevice
         virtual bool networkAvailable() = 0;
         virtual void startSocket(String serverIp, int port) = 0;
         virtual void stopSocket() = 0;
-        virtual void send(String message) = 0;
         virtual void loopSocket() = 0;
+        virtual void send(String message) = 0;
 
         void socketOpened();
         void socketClosed();
         void onMessage(char* message);
 
     private:
+        OutputBuffer outputBuffer;
         bool deviceStarted;
         String deviceName;
         void connectServer();

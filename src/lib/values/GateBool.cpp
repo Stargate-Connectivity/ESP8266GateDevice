@@ -1,8 +1,9 @@
 #include "GateBool.h"
 
-GateBool::GateBool() : GateValue() {
+GateBool::GateBool(OutputBuffer* outputBuffer) : GateValue() {
     this->value = false;
     this->type = "boolean";
+    this->outputBuffer = outputBuffer;
 }
 
 String GateBool::toString() {
@@ -28,7 +29,10 @@ bool GateBool::getValue() {
 }
 
 void GateBool::setValue(bool value) {
-    this->value = value;
+    if(this->value != value) {
+        this->value = value;
+        this->outputBuffer->sendValue(this);
+    }
 }
 
 void GateBool::setRemoteValue(bool value) {

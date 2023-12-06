@@ -26,6 +26,8 @@ GateDevice::GateDevice() {
     this->pingTimer = 0;
     this->pingInProgress = false;
     this->failedPings = 0;
+    this->outputBuffer.sendFunction = std::bind(&GateDevice::send, this, std::placeholders::_1);
+    this->factory.outputBuffer = &this->outputBuffer;
 };
 
 void GateDevice::setDeviceName(String name) {
@@ -47,6 +49,7 @@ void GateDevice::loop() {
         if (this->connectionState == 4) {
             this->loopSocket();
             this->handlePing();
+            this->outputBuffer.loop();
             // TODO
         } else {
             this->connectServer();
