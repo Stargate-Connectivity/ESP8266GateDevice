@@ -22,6 +22,7 @@
 
 #include <Arduino.h>
 #include "MessageHandler.h"
+#include "lib/values/ValueFactory.h"
 
 class GateDevice
 {
@@ -31,6 +32,7 @@ class GateDevice
         void startDevice();
         void loop();
         int connectionState;
+        ValueFactory factory;
 
     protected:
         virtual bool startUdp(int port) = 0;
