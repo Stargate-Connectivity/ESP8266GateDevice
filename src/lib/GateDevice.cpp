@@ -118,7 +118,7 @@ void GateDevice::onMessage(char* message) {
             if (message[1] == '?') {
                 message[1] = '>';
                 String response = strcat(message, "|");
-                response += createManifest(this->deviceName);
+                response += createManifest(this->deviceName, this->factory.getValues());
                 this->send(response);
             } else if (message[1] == '!') {
                 if (message[2] == 'a') {

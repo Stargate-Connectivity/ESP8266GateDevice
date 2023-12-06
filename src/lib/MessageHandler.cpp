@@ -22,7 +22,7 @@ std::list<String> parseArray(String array) {
     return params;
 }
 
-String createManifest(String deviceName) {
+String createManifest(String deviceName, std::map<int, GateValue*> valuesMap) {
     String manifest("{");
     EEPROM.begin(40);
     delay(10);
@@ -42,7 +42,12 @@ String createManifest(String deviceName) {
         manifest += "\"id\":\"" + id + "\", ";
     }
     EEPROM.end();
-    manifest += "\"deviceName\":\"" + deviceName + "\", \"values\":[]}";
+    manifest += "\"deviceName\":\"" + deviceName + "\", \"values\":[";
+    for (auto valueEntry : valuesMap) {
+        manifest += valueEntry.second->toManifest() + ",";
+    }
+    manifest.remove(manifest.length() - 1);
+    manifest += "]}";
     return manifest;
 }
 

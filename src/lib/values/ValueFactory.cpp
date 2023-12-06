@@ -6,3 +6,7 @@ GateBool* ValueFactory::createBool(String direction) {
     this->valuesMap[value->id] = value;
     return value;
 }
+
+std::map<int, GateValue*> ValueFactory::getValues() {
+    return this->valuesMap;
+}

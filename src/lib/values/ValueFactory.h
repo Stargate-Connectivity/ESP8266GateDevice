@@ -10,6 +10,7 @@ class ValueFactory
 {
     public:
         GateBool* createBool(String direction);
+        std::map<int, GateValue*> getValues();
 
     private:
         std::map<int, GateValue*> valuesMap;
