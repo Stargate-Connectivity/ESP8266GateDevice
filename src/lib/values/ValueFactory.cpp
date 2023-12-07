@@ -2,7 +2,7 @@
 
 GateBool ValueFactory::createBool(String direction) {
     GateBool value(this->outputBuffer);
-    value.direction = direction;
+    value.direction = GateValue::getDirection(direction);
     this->valuesMap[value.id] = &value;
     return value;
 }

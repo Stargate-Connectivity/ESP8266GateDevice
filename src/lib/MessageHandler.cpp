@@ -93,11 +93,30 @@ void handleValueMessage(String message, std::map<int, GateValue*> valuesMap) {
                 auto entry = valuesMap.find(*idsIterator);
                 if (entry == valuesMap.end()) {
                     continue;
-                } else if (entry->second->direction.charAt(0) == 'i') {
+                } else if (entry->second->direction == 1) {
                     entry->second->fromRemote(*valuesIterator);
                 }
                 std::advance(idsIterator, 1);
                 std::advance(valuesIterator, 1);
+            }
+        }
+    }
+}
+
+void handleSubscription(bool subscribed, String message, std::map<int, GateValue*> valuesMap, OutputBuffer* outputBuffer) {
+    int separatorIndex = message.indexOf('|');
+    if (separatorIndex != -1) {
+        String idsString = message.substring(separatorIndex + 1);
+        auto ids = parseArray(idsString);
+        for (auto id : ids) {
+            auto entry = valuesMap.find(id.toInt());
+            if (entry == valuesMap.end()) {
+                continue;
+            } else {
+                entry->second->subscribed = subscribed;
+                if (subscribed) {
+                    outputBuffer->sendValue(entry->second);
+                }
             }
         }
     }

@@ -19,7 +19,9 @@ void OutputBuffer::loop() {
 }
 
 void OutputBuffer::sendValue(GateValue* value) {
-    this->buffer[value->id] = value;
+    if (value->subscribed) {
+        this->buffer[value->id] = value;
+    }
 }
 
 void OutputBuffer::clear() {

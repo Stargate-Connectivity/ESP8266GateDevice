@@ -9,10 +9,12 @@ class GateValue
         GateValue();
         int id;
         String valueName;
-        String direction;
+        int direction;
+        bool subscribed;
         virtual String toString() = 0;
         virtual void fromRemote(String textValue) = 0;
         virtual String toManifest() = 0;
+        static int getDirection(String directionString);
 
     protected:
         String type;
@@ -21,6 +23,7 @@ class GateValue
 
     private:
         static int nextId;
+        static String getDirectionString(int direction);
 };
 
 #endif

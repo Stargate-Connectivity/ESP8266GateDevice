@@ -125,8 +125,7 @@ void GateDevice::onMessage(char* message) {
                 this->send(response);
             } else if (message[1] == '!') {
                 if (message[2] == 'a') {
-                    String msg(message);
-                    handleIdAssigned(msg);
+                    handleIdAssigned(String(message));
                 } else if (message[2] == 'r') {
                     this->pingInProgress = false;
                     this->failedPings = 0;
@@ -141,6 +140,12 @@ void GateDevice::onMessage(char* message) {
                 this->pingInProgress = false;
                 this->pingTimer = millis() + 3000;
                 this->failedPings = 0;
+            } else if (message[1] == '!') {
+                if(message[2] == 's') {
+                    handleSubscription(true, String(message), this->factory.getValues(), &this->outputBuffer);
+                } else if (message[2] == 'u') {
+                    handleSubscription(false, String(message), this->factory.getValues(), &this->outputBuffer);
+                }
             }
         } else {
             handleValueMessage(String(message), this->factory.getValues());
