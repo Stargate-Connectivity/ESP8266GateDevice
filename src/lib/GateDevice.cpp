@@ -130,6 +130,7 @@ void GateDevice::onMessage(char* message) {
                 } else if (message[2] == 'r') {
                     this->pingInProgress = false;
                     this->failedPings = 0;
+                    this->outputBuffer.clear();
                     this->connectionState = 4;
                 }
             }
@@ -145,4 +146,8 @@ void GateDevice::onMessage(char* message) {
             handleValueMessage(String(message), this->factory.getValues());
         }
     }
+}
+
+bool GateDevice::ready() {
+    return this->connectionState == 4;
 }

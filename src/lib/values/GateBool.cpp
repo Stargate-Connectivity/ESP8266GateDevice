@@ -11,7 +11,7 @@ String GateBool::toString() {
 }
 
 void GateBool::fromRemote(String textValue) {
-    this->setRemoteValue(textValue.equals("1"));
+    this->setValue(textValue.equals("1"));
 }
 
 String GateBool::toManifest() {
@@ -33,8 +33,4 @@ void GateBool::setValue(bool value) {
         this->value = value;
         this->outputBuffer->sendValue(this);
     }
-}
-
-void GateBool::setRemoteValue(bool value) {
-    this->value = value;
 }

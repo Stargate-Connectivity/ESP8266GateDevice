@@ -93,7 +93,7 @@ void handleValueMessage(String message, std::map<int, GateValue*> valuesMap) {
                 auto entry = valuesMap.find(*idsIterator);
                 if (entry == valuesMap.end()) {
                     continue;
-                } else {
+                } else if (entry->second->direction.charAt(0) == 'i') {
                     entry->second->fromRemote(*valuesIterator);
                 }
                 std::advance(idsIterator, 1);

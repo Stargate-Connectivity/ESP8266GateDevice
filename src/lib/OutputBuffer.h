@@ -10,6 +10,7 @@ class OutputBuffer
     public:
         void loop();
         void sendValue(GateValue* value);
+        void clear();
         std::function<void(String message)> sendFunction;
 
     private:

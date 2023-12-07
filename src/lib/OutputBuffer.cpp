@@ -14,9 +14,14 @@ void OutputBuffer::loop() {
         ids.remove(ids.length() - 1);
         lengths.remove(lengths.length() - 1);
         this->sendFunction(ids + "|" + lengths + "|" + values);
+        this->buffer.clear();
     }
 }
 
 void OutputBuffer::sendValue(GateValue* value) {
     this->buffer[value->id] = value;
+}
+
+void OutputBuffer::clear() {
+    this->buffer.clear();
 }
