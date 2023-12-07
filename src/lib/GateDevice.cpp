@@ -141,6 +141,8 @@ void GateDevice::onMessage(char* message) {
                 this->pingTimer = millis() + 3000;
                 this->failedPings = 0;
             }
+        } else {
+            handleValueMessage(String(message), this->factory.getValues());
         }
     }
 }
