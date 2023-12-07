@@ -32,7 +32,7 @@ class GateDevice
         void setDeviceName(String name);
         void startDevice();
         void loop();
-        bool ready();
+        bool isReady();
         int connectionState;
         ValueFactory factory;
 

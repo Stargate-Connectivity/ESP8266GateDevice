@@ -76,6 +76,7 @@ void GateDevice::connectServer() {
                 String serverIp = this->getServerIp();
                 this->stopUdp();
                 this->startSocket(serverIp, 10003);
+                this->pingTimer = millis() + 5000;
                 this->connectionState = 2;
             }
             break;
@@ -83,7 +84,12 @@ void GateDevice::connectServer() {
         case 2:
         case 3:
         {
-            this->loopSocket();
+            if (this->pingTimer < millis()) {
+                this->stopSocket();
+                this->connectionState = 0;
+            } else {
+                this->loopSocket();
+            }
             break;
         }
     }
@@ -153,6 +159,6 @@ void GateDevice::onMessage(char* message) {
     }
 }
 
-bool GateDevice::ready() {
+bool GateDevice::isReady() {
     return this->connectionState == 4;
 }
