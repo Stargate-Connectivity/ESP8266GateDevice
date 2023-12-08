@@ -12,6 +12,7 @@ String GateBool::toString() {
 
 void GateBool::fromRemote(String textValue) {
     this->setValue(textValue.equals("1"));
+    this->onRemoteChange();
 }
 
 String GateBool::toManifest() {

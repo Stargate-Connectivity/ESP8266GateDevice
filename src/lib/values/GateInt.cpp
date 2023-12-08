@@ -12,6 +12,7 @@ String GateInt::toString() {
 
 void GateInt::fromRemote(String textValue) {
     this->setValue(textValue.toInt());
+    this->onRemoteChange();
 }
 
 String GateInt::toManifest() {

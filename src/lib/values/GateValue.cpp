@@ -24,6 +24,7 @@ int GateValue::getDirection(String directionString) {
 }
 
 GateValue::GateValue() {
+    this->onRemoteChange = std::function<void()>();
     this->id = GateValue::nextId;
     GateValue::nextId++;
 }

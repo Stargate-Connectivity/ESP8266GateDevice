@@ -15,6 +15,7 @@ class GateValue
         virtual void fromRemote(String textValue) = 0;
         virtual String toManifest() = 0;
         static int getDirection(String directionString);
+        std::function<void()> onRemoteChange;
 
     protected:
         String type;
