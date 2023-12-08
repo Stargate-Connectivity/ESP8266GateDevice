@@ -20,7 +20,6 @@ class GateBool : public GateValue
     private:
         OutputBuffer* outputBuffer;
         bool value;
-        void setRemoteValue(bool value);
 };
 
 #endif
