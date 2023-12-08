@@ -16,6 +16,7 @@ class ValueFactory
         GateInt createInt(String direction);
         GateFloat createFloat(String direction);
         std::map<int, GateValue*> getValues();
+        void addValue(GateValue* gateValue);
         OutputBuffer* outputBuffer;
 
     private:

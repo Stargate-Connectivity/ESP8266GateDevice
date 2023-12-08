@@ -34,7 +34,7 @@ void GateValue::setName(String valueName) {
 }
 
 String GateValue::toPartialManifest() {
-    String manifest = "{\"id\":\"" + String(this->id)
+    String manifest = "{\"id\":\"" + (this->id == -1 ? "@ping" : String(this->id))
             + "\",\"type\":\"" + this->type
             + "\",\"valueName\":\"" + this->valueName
             + "\",\"direction\":\"" + GateValue::getDirectionString(this->direction)

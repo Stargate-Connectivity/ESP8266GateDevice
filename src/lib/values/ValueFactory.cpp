@@ -24,3 +24,7 @@ GateFloat ValueFactory::createFloat(String direction) {
 std::map<int, GateValue*> ValueFactory::getValues() {
     return this->valuesMap;
 }
+
+void ValueFactory::addValue(GateValue* value) {
+    this->valuesMap[value->id] = value;
+}

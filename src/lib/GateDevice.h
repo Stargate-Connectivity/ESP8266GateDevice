@@ -33,6 +33,7 @@ class GateDevice
         void start();
         void loop();
         bool isReady();
+        void usePing();
         int connectionState;
         ValueFactory factory;
 
@@ -58,9 +59,12 @@ class GateDevice
         String deviceName;
         void connectServer();
         void handlePing();
+        int pingInterval;
         unsigned long pingTimer;
         bool pingInProgress;
         int failedPings;
+        bool pingInUse;
+        GateInt* ping;
 };
 
 #endif

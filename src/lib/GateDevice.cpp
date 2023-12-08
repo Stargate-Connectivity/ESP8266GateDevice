@@ -23,6 +23,7 @@ GateDevice::GateDevice() {
     this->deviceStarted = false;
     this->deviceName = "";
     this->connectionState = 0;
+    this->pingInterval = 1000;
     this->pingTimer = 0;
     this->pingInProgress = false;
     this->failedPings = 0;
@@ -107,7 +108,7 @@ void GateDevice::handlePing() {
         }
         if (this->connectionState == 4) {
             this->pingInProgress = true;
-            this->pingTimer = now + 1000;
+            this->pingTimer = now + this->pingInterval;
             this->send("*?ping");
         }
     }
@@ -143,6 +144,10 @@ void GateDevice::onMessage(char* message) {
     } else {
         if (message[0] == '*') {
             if (message[1] == '>' && this->pingInProgress) {
+                if (this->pingInUse && this->pingTimer > this->pingInterval) {
+                    int timePassed = (int) (millis() - (this->pingTimer - this->pingInterval));
+                    this->ping->setValue(timePassed / 2);
+                }
                 this->pingInProgress = false;
                 this->pingTimer = millis() + 3000;
                 this->failedPings = 0;
@@ -161,4 +166,15 @@ void GateDevice::onMessage(char* message) {
 
 bool GateDevice::isReady() {
     return this->connectionState == 4;
+}
+
+void GateDevice::usePing() {
+    if (!this->deviceStarted) {
+        this->pingInUse = true;
+        this->ping = new GateInt(&this->outputBuffer);
+        this->ping->id = -1;
+        this->ping->direction = GateValue::getDirection("output");
+        this->ping->setName("Ping");
+        this->factory.addValue(this->ping);
+    }
 }

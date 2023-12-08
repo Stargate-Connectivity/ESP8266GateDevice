@@ -3,6 +3,8 @@
 GateInt::GateInt(OutputBuffer* outputBuffer) : GateValue() {
     this->type = "integer";
     this->outputBuffer = outputBuffer;
+    this->minSet = false;
+    this->maxSet = false;
 }
 
 String GateInt::toString() {

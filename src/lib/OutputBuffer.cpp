@@ -6,7 +6,7 @@ void OutputBuffer::loop() {
         String lengths = "";
         String values = "";
         for (auto entry : buffer) {
-            ids += String(entry.first) + ",";
+            ids += (entry.first == -1 ? "@ping" : String(entry.first)) + ",";
             String textValue = entry.second->toString();
             lengths += String(textValue.length()) + ",";
             values += textValue;
