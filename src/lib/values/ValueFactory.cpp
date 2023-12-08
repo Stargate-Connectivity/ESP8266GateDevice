@@ -14,6 +14,13 @@ GateInt ValueFactory::createInt(String direction) {
     return value;
 }
 
+GateFloat ValueFactory::createFloat(String direction) {
+    GateFloat value(this->outputBuffer);
+    value.direction = GateValue::getDirection(direction);
+    this->valuesMap[value.id] = &value;
+    return value;
+}
+
 std::map<int, GateValue*> ValueFactory::getValues() {
     return this->valuesMap;
 }

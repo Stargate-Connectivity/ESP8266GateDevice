@@ -29,8 +29,8 @@ class GateDevice
 {
     public:
         GateDevice();
-        void setDeviceName(String name);
-        void startDevice();
+        void setName(String name);
+        void start();
         void loop();
         bool isReady();
         int connectionState;

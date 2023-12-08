@@ -29,6 +29,10 @@ GateValue::GateValue() {
     GateValue::nextId++;
 }
 
+void GateValue::setName(String valueName) {
+    this->valueName = valueName;
+}
+
 String GateValue::toPartialManifest() {
     String manifest = "{\"id\":\"" + String(this->id)
             + "\",\"type\":\"" + this->type

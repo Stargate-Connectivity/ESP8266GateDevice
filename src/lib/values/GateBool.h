@@ -14,6 +14,8 @@ class GateBool : public GateValue
         String toManifest() override;
         bool getValue();
         void setValue(bool value);
+        void setLabelTrue(String label);
+        void setLabelFalse(String label);
         String labelTrue;
         String labelFalse;
 

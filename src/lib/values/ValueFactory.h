@@ -6,6 +6,7 @@
 #include "GateValue.h"
 #include "GateBool.h"
 #include "GateInt.h"
+#include "GateFloat.h"
 #include "../OutputBuffer.h"
 
 class ValueFactory
@@ -13,6 +14,7 @@ class ValueFactory
     public:
         GateBool createBool(String direction);
         GateInt createInt(String direction);
+        GateFloat createFloat(String direction);
         std::map<int, GateValue*> getValues();
         OutputBuffer* outputBuffer;
 

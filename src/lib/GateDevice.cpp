@@ -30,13 +30,13 @@ GateDevice::GateDevice() {
     this->factory.outputBuffer = &this->outputBuffer;
 };
 
-void GateDevice::setDeviceName(String name) {
+void GateDevice::setName(String name) {
     if (!this->deviceStarted) {
         this->deviceName = name;
     }
 };
 
-void GateDevice::startDevice() {
+void GateDevice::start() {
     if (!this->deviceStarted) {
         this->deviceStarted = true;
         this->onDeviceStart();

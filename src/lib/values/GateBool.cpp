@@ -1,7 +1,6 @@
 #include "GateBool.h"
 
 GateBool::GateBool(OutputBuffer* outputBuffer) : GateValue() {
-    this->value = false;
     this->type = "boolean";
     this->outputBuffer = outputBuffer;
 }
@@ -34,4 +33,12 @@ void GateBool::setValue(bool value) {
         this->value = value;
         this->outputBuffer->sendValue(this);
     }
+}
+
+void GateBool::setLabelTrue(String label) {
+    this->labelTrue = label;
+}
+
+void GateBool::setLabelFalse(String label) {
+    this->labelFalse = label;
 }

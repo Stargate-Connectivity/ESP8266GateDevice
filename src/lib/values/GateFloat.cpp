@@ -1,20 +1,20 @@
-#include "GateInt.h"
+#include "GateFloat.h"
 
-GateInt::GateInt(OutputBuffer* outputBuffer) : GateValue() {
-    this->type = "integer";
+GateFloat::GateFloat(OutputBuffer* outputBuffer) : GateValue() {
+    this->type = "float";
     this->outputBuffer = outputBuffer;
 }
 
-String GateInt::toString() {
+String GateFloat::toString() {
     return String(this->value);
 }
 
-void GateInt::fromRemote(String textValue) {
-    this->setValue(textValue.toInt());
+void GateFloat::fromRemote(String textValue) {
+    this->setValue(textValue.toDouble());
     this->onRemoteChange();
 }
 
-String GateInt::toManifest() {
+String GateFloat::toManifest() {
     String manifest = this->toPartialManifest();
     if (this->minSet || this->maxSet) {
         String rangeMin = this->minSet ? String(this->min) : "null";
@@ -26,11 +26,11 @@ String GateInt::toManifest() {
     return manifest;
 }
 
-long GateInt::getValue() {
+double GateFloat::getValue() {
     return this->value;
 }
 
-void GateInt::setValue(long value) {
+void GateFloat::setValue(double value) {
     if(this->value != value) {
         if (this->minSet && value < this->min) {
             value = this->min;
@@ -42,7 +42,7 @@ void GateInt::setValue(long value) {
     }
 }
 
-void GateInt::setMin(long min) {
+void GateFloat::setMin(double min) {
     this->minSet = true;
     this->min = min;
     if (this->value < min) {
@@ -50,7 +50,7 @@ void GateInt::setMin(long min) {
     }
 }
 
-void GateInt::setMax(long max) {
+void GateFloat::setMax(double max) {
     this->maxSet = true;
     this->max = max;
     if (this->value > max) {
